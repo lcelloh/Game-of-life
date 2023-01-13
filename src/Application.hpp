@@ -25,11 +25,11 @@ public:
     Entity() = default;
 
     void SetPoss(int x, int y){_posX = x; _posY = y;}
-    void SetState(bool st){_state = st;}
+    void SetState(bool state){_state = state;}
     bool GetState(){return _state;}
     vector<int> GetPoss(){
-        vector<int> vi {_posX, _posY};
-        return vi;
+        vector<int> vecPoss {_posX, _posY};
+        return vecPoss;
     }
 };
 
@@ -48,8 +48,8 @@ private:
 public:
     Field(int, int );
 
-    int GetRows() {return _rows; }
-    int GetCols() {return _cols; }
+    int GetRows() {return _rows; };
+    int GetCols() {return _cols; };
     void PrintField(String, String);
     void PrintField();
 };
@@ -73,8 +73,23 @@ public:
     Window(int, int, String, String);
     ~Window();   
 
-    Field* GetFieldA() {return _pFieldA; };
-    Field* GetFieldB() {return _pFieldB; };
+    Field* GetFieldA() {return _pFieldA; }
+    Field* GetFieldB() {return _pFieldB; }
+};
+
+#endif
+
+#ifndef GAME 
+#define GAME 
+class Game 
+{
+private:
+    Window _window; 
+public:
+    Game(Window wind): _window (wind) {};
+    
+    void Run();
+
 };
 
 #endif

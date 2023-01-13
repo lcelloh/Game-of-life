@@ -1,6 +1,4 @@
 #include "Application.hpp"
-#include <iostream>
-#include <vector>
 
 const int HEIGHT = 50;
 const int WIDTH = 50;
@@ -13,17 +11,10 @@ int main (int argc, char *argv[])
 {
     Window window(HEIGHT, WIDTH, blackBlock, whiteBLock);
 
-    window.GetFieldA()->PrintField();
-    String tempstr; 
+    Game game(window);
+    game.Run();
 
-    std::cin >> tempstr; 
-    for (int i = 0; i < 10; i++ ){
-    window.GetFieldA()-> PrintField(blackBlock, whiteBLock);
-    std::cout << "NUMBER OF GENERATIONS : " << i << std::endl;
-    WAIT(1000);
-    }
     return 0;
-
 }
 
 Field::Field(int r, int c)
@@ -36,7 +27,7 @@ Field::Field(int r, int c)
     int count = 0; 
     for (int i=0; i < _rows; i++){
         for (int j = 0;j < _cols; j++){
-            _cells[i][j].SetPoss(j, i);
+            _cells[j][i].SetPoss(i, j);
         }
     }
 }
@@ -46,15 +37,12 @@ void Field::PrintField(String s1, String s2)
     for(auto &bvec: _cells){
         for(auto cell: bvec){
             if (cell.GetState() == false) {
-                // std::cout << s1 << " ";
-                for (auto c: cell.GetPoss()){
-                    std::cout << c << " ";
-                }
-            }else {
+                std::cout << s1 << " ";
+            }else{
                 std::cout << s2 << " ";
             }
         }
-        // _cells [HEIGHT/2][WIDTH/2] = ;
+        // _cells [HEIGHT/2][WIDTH/2] = 1; 
         std::cout << '\n';
     }
 }
@@ -101,10 +89,21 @@ Window::~Window()
 {
     if (_pFieldA == nullptr) {
        delete _pFieldA; 
-
+    }
     if (_pFieldB == nullptr) {
         delete _pFieldB; 
     }
-    }
 }
 
+void Game::Run()
+{
+    // window.GetFieldA()->PrintField();
+    // String tempstr; 
+
+    // std::cin >> tempstr; 
+    for (int i = 0; i < 1; i++ ){
+    _window.GetFieldA()-> PrintField(blackBlock, whiteBLock);
+    std::cout << "NUMBER OF GENERATIONS : " << i << std::endl;
+    WAIT(1000);
+    }
+}
