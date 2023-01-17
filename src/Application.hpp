@@ -1,95 +1,36 @@
+#include <cstdio>
+#include <ostream>
 #include <string>
 #include <vector>
 #include <iostream>
 
-#include <chrono>    //needed for wait
+#include <chrono>    //needed for WAIT
 #include <thread>  
+
+using std::vector;
+using std::string;
+using size_type =  std::string::size_type;
 
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
 
-using String = std::string;
-using std::vector;
+class Field {
+public: 
+    Field() = default;
+    Field(size_type wd, size_type ht, string alCel, string deCel): _width(wd), _height(ht), 
+                                            _elements(_width * _height, 0),
+                                            _deadCell(deCel), _aliveCell(alCel) {}; 
 
+    inline bool get() const {return _elements[_cursor]; }
+    Field &move ();
+    Field &move (size_type r, size_type c);
 
-#ifndef ENTITY
-#define ENTITY
-class Entity 
-{
+    void display(std::ostream &os) ;
+
 private:
-    bool _state = false;
-    int _posX = 0;
-    int _posY = 0;
+    size_type _cursor = 0;
+    size_type _width = 0, _height = 0;
+    string _deadCell, _aliveCell;
 
-public:
-    Entity(int x,  int y): _posX(x), _posY(y){}
-    Entity() = default;
-
-    void SetPoss(int x, int y){_posX = x; _posY = y;}
-    void SetState(bool state){_state = state;}
-    bool GetState(){return _state;}
-    vector<int> GetPoss(){
-        vector<int> vecPoss {_posX, _posY};
-        return vecPoss;
-    }
+    vector<bool> _elements;
 };
 
-#endif
-
-#ifndef FIELD 
-#define FIELD 
-class Field  
-{
-private:
-    int _rows = 0;
-    int _cols = 0;
-    
-    vector<vector<Entity>> _cells;
-
-public:
-    Field(int, int );
-
-    int GetRows() {return _rows; };
-    int GetCols() {return _cols; };
-    void PrintField(String, String);
-    void PrintField();
-};
-
-#endif
-
-#ifndef WINDOW 
-#define WINDOW
-class Window
-{
-private:
-    int _height;
-    int _width;
-    String _deadCell;
-    String _aliveCell;
-
-    Field* _pFieldA = nullptr;
-    Field* _pFieldB = nullptr;
-
-public:
-    Window(int, int, String, String);
-    ~Window();   
-
-    Field* GetFieldA() {return _pFieldA; }
-    Field* GetFieldB() {return _pFieldB; }
-};
-
-#endif
-
-#ifndef GAME 
-#define GAME 
-class Game 
-{
-private:
-    Window _window; 
-public:
-    Game(Window wind): _window (wind) {};
-    
-    void Run();
-
-};
-
-#endif
