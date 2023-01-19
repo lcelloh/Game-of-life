@@ -1,11 +1,10 @@
-#include <cstdio>
-#include <ostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include <chrono>    //needed for WAIT
 #include <thread>  
+
+#include <cstdlib>  //needed for system("CLS")
 
 using std::vector;
 using std::string;
@@ -14,6 +13,7 @@ using size_type =  std::string::size_type;
 #define WAIT(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
 
 class Field {
+    friend class Game; 
 public: 
     Field() = default;
     Field(size_type wd, size_type ht, string alCel, string deCel): _width(wd), _height(ht), 
@@ -21,8 +21,10 @@ public:
                                             _deadCell(deCel), _aliveCell(alCel) {}; 
 
     inline bool get() const {return _elements[_cursor]; }
-    Field &move ();
-    Field &move (size_type r, size_type c);
+    Field &change();
+    Field &move_of (int v);
+    Field &move (size_type c, size_type r);
+    Field &reset ();
 
     void display(std::ostream &os) ;
 
@@ -34,3 +36,10 @@ private:
     vector<bool> _elements;
 };
 
+class Game{
+public:
+
+    static bool CheckAdjacent(bool state, size_type cursor, size_type index, vector<bool> collection);
+    static void Evaluate(Field* field);
+    static void Run(Field* field, size_type duration, int waitTime, std::ostream &os); 
+};
