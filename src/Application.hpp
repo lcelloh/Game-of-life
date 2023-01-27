@@ -21,7 +21,9 @@ public:
                                             _deadCell(deCel), _aliveCell(alCel) {}; 
 
     inline bool get() const {return _elements[_cursor]; }
-    Field &change();
+    inline bool getWidth() const {return _width; }
+    inline bool getHeight() const {return _height; }
+    Field &change(bool value);
     Field &move_of (int v);
     Field &move (size_type c, size_type r);
     Field &reset ();
@@ -39,7 +41,7 @@ private:
 class Game{
 public:
 
-    static bool CheckAdjacent(bool state, size_type cursor, size_type index, vector<bool> collection);
+    static bool CheckAdjacent(Field* permaField, int index, vector<bool>& tempField);
     static void Evaluate(Field* field);
     static void Run(Field* field, size_type duration, int waitTime, std::ostream &os); 
 };

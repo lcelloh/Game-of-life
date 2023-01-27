@@ -1,9 +1,10 @@
 #include "Application.hpp"
 #include <cstdio>
 #include <iostream>
+#include <iterator>
 #include <ostream>
 
-const size_type N_GEN = 5;
+const size_type N_GEN = 30;
 
 const size_type HEIGHT = 20; 
 const size_type WIDTH = 20; 
@@ -14,16 +15,15 @@ const string whiteBLock = "\u25a0";
 int main (int argc, char *argv[])
 {
     Field field(WIDTH, HEIGHT, whiteBLock, blackBlock); 
-    Game::Run(&field, N_GEN, 1, std::cout);
+    Game::Run(&field, N_GEN, 1 , std::cout);
 
     std::cout << std::endl;
     return 0;
 }
 
-Field &Field::change()
+Field &Field::change(bool value)
 {
-    bool temp = _elements[_cursor];
-    _elements[_cursor] = !temp;
+    _elements[_cursor] = value;
     return *this;
 }
 Field &Field::move_of(int v)
@@ -60,28 +60,76 @@ void Field::display(std::ostream &os)
     }
 }        
 
-bool Game::CheckAdjacent(bool state, size_type cursor, size_type index, vector<bool> collection)
+bool Game::CheckAdjacent(Field* permaField,int index, vector<bool>& tempField)
 {
     size_type nearAlive = 0; 
+    size_type fWidth = 20; 
+
+    bool state = tempField[index];
+
+    if ((index - 1) >= 0 && ((index -1) % fWidth ) !=0) {         //element line check
+        if(tempField[index - 1]) 
+        nearAlive++;
+    }
+    if((index % fWidth) != 0 && index < tempField.size()){
+        if(tempField[index + 1]) 
+        nearAlive++;
+    }
+
+    if (((index - fWidth) - 1) >= 0 && ((index -1) % fWidth ) !=0) {         //previous line check
+        if(tempField[((index - fWidth) - 1)] ) 
+            nearAlive++;
+    }
+    if((index % fWidth) !=0 && index - fWidth >= 0){
+        if(tempField[index - fWidth + 1]) 
+        nearAlive++;
+    }
+    if(index - fWidth >= 0 ){
+        if(tempField[index - fWidth])
+            nearAlive++;
+    }
+
+    if (((index + fWidth) - 1) < tempField.size() && (((index -1) % fWidth ) !=0)) {         //next line check
+        if(tempField[((index + fWidth) - 1)] ) 
+            nearAlive++;
+    }
+    if(((index  % fWidth) !=0) && ((index + fWidth) < tempField.size())){
+        if(tempField[(index + fWidth) + 1]) 
+            nearAlive++;
+    }
+    if((index + fWidth) < tempField.size()){
+        if(tempField[index + fWidth])
+            nearAlive++;
+    }
+
+    if(state){
+        if(!(nearAlive >= 2 && nearAlive <= 3)){
+            state = false;
+        }
+    }else if (!state){
+        if(nearAlive == 3){
+            state = true;
+        }
+    }
+
+    return state;
 }
 
 void Game::Evaluate(Field *field)
 {
     vector<bool> copyElements = field->_elements;
-    size_type *pCursor = &(field->_cursor);
 
     for(size_type i = 0; i <(field->_height * field->_width); i++){
-        if(copyElements[i]){
-            
-        }else if (!copyElements[i]) {
-        
-        }
+        bool state = CheckAdjacent(field, i , copyElements);
+        field->_elements[i] = state;
     }
 }
 
 
 void Game::Run(Field *field, size_type duration, int waitTime, std::ostream &os){
-    
+   
+    field->move_of(145).change(true).move_of(1).change(true).move_of(1).change(true).move(6,6).change(true);// .move_of(19).change(true).move_of(1).change(true);
+
     field->display(os);
     std::cin.get();
     os << "\n";
@@ -89,14 +137,15 @@ void Game::Run(Field *field, size_type duration, int waitTime, std::ostream &os)
     for(int i = 0; i < duration; i++) {
         
         field->reset();
+
         Evaluate(field);
-        system("clear");
+        // system("clear");
         field->display(os);
                 
         os << "\n";
         os << "Number of generation: " << i;
         os << "\n";
-        WAIT(waitTime * 1000);
+        WAIT(waitTime * 500);
     }
 }
 
